@@ -22,33 +22,16 @@ const Task = new Schema({
 const Model = mongoose.model;
 const Item = Model("todo-items", Task);
 let id = -1;
-const Todo = new Item({
-  name: "test",
-  checked: false,
-  deleted: false,
-  editing: false,
-  id: 1,
+let todos = [];
+Item.find().then((res) => {
+  todos = res;
+  console.log(todos);
 });
-let example = [{ test: "test" }];
-// Todo.save((err,result)=>{
-//     if(err) console.log(err)
-//     console.log(result);
-// });
-const todos = [];
 
 const routing = {
   "/todos": () => {
     return todos;
   },
-//   "/create": () => {
-//     return todos;
-//   },
-//   "/delete": () => {
-//     return todos;
-//   },
-//   "/checked": () => {
-//     return todos;
-//   },
 };
 const types = {
   function: (fn, req, res) => JSON.stringify(fn(req, res)),
@@ -62,17 +45,28 @@ http
         const type = typeof data;
         const serializer = types[type];
         const result = serializer(data, req, res);
-  
+
         res.end(result);
         break;
       case "/create":
         let bodyCreate = "";
         req.on("data", (chunk) => {
-            
-            bodyCreate += chunk;
-            bodyCreate = JSON.parse(bodyCreate);
-            bodyCreate.id = ++id;
+          bodyCreate += chunk;
+          bodyCreate = JSON.parse(bodyCreate);
+          bodyCreate.id = ++id;
           todos.push(bodyCreate);
+          const Todo = new Item({
+            name: bodyCreate.name,
+            checked: bodyCreate.checked,
+            deleted: bodyCreate.deleted,
+            editing: bodyCreate.editing,
+            id: ++id,
+          });
+
+          Todo.save((err, result) => {
+            if (err) console.log(err);
+            console.log(result);
+          });
         });
         req.on("end", () => {
           console.log(bodyCreate);
@@ -82,10 +76,9 @@ http
       case "/delete":
         let bodyDelete = "";
         req.on("data", (chunk) => {
-            
-            bodyDelete += chunk;
-            bodyDelete = JSON.parse(bodyDelete);
-  
+          bodyDelete += chunk;
+          bodyDelete = JSON.parse(bodyDelete);
+
           for (let i = 0; i < todos.length; i++) {
             if (todos[i].id === +bodyDelete.id) {
               // itemsArray.splice(i,1);
@@ -94,34 +87,70 @@ http
           }
         });
         req.on("end", () => {
-          console.log(todos[bodyDelete.id]);
+          console.log(todos);
         });
         res.end("delete");
         break;
       case "/checked":
-          let bodyChecked ='';
-          req.on('data', (chunk)=>{
-              bodyChecked += chunk;
-              bodyChecked = JSON.parse(bodyChecked);
-              for (let i = 0; i < todos.length.length; i++) {
-                if (todos.length[i].id === +bodyChecked.id) {
-                  if (todos.length[i].checked === false) {
-                    todos.length[i].checked = true;
-                  } else if (todos.length[i].checked === true) {
-                    todos.length[i].checked = false;
-                  }
-                }
+        let bodyChecked = "";
+        req.on("data", (chunk) => {
+          bodyChecked += chunk;
+          bodyChecked = JSON.parse(bodyChecked);
+
+          for (let i = 0; i < todos.length; i++) {
+            if (todos[i].id === +bodyChecked.id) {
+              if (todos[i].checked === false) {
+                todos[i].checked = true;
+              } else if (todos.checked === true) {
+                todos[i].checked = false;
               }
-          });
-          //ВЫВОДИТ В КОНСОЛЬ UNDERFINDE!!!!!!
-          req.on("end", () => {
-            console.log(bodyChecked.id);
-          });
-          res.end("checked");
+            }
+          }
+        });
+
+        req.on("end", () => {
+          console.log("bodyChecked");
+        });
+        res.end("checked");
+        break;
+      case "/editing":
+        let bodyEditing = "";
+        req.on("data", (chunk) => {
+          bodyEditing += chunk;
+          bodyEditing = JSON.parse(bodyEditing);
+          for (let i = 0; i < todos.length; i++) {
+            if (todos[i].id === +bodyEditing.id) {
+              todos[i].editing = true;
+            }
+          }
+        });
+
+        req.on("end", () => {
+          console.log(bodyEditing);
+        });
+        res.end("editing");
         break;
       case "/change":
+        let bodyChange = "";
+        req.on("data", (chunk) => {
+          bodyChange += chunk;
+          bodyChange = JSON.parse(bodyChange);
+
+          for (let i = 0; i < todos.length; i++) {
+            if (todos[i].id === +bodyChange.id) {
+              todos[i].editing = false;
+              if (bodyChange.name !== undefined) {
+                todos[i].name = bodyChange.name;
+              }
+            }
+          }
+        });
+
+        req.on("end", () => {
+          console.log("bodyChange");
+        });
+        res.end("Changed");
         break;
     }
-    
   })
   .listen(3000);

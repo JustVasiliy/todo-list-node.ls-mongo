@@ -1,7 +1,7 @@
 //class for save items in array and logic
 export class Store {
-  constructor() {
-    this.arrayItems = [];
+  constructor(arrayItems) {
+    this.arrayItems = arrayItems || [];
     this.countId = -1;
   }
   create(item) {
