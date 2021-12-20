@@ -25,13 +25,13 @@ let id = -1;
 let todos = [];
 Item.find().then((res) => {
   todos = res;
-  console.log(todos);
+  
 });
 
 const routing = {
   "/todos": () => {
     return todos;
-  },
+  }
 };
 const types = {
   function: (fn, req, res) => JSON.stringify(fn(req, res)),

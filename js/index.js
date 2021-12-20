@@ -116,9 +116,7 @@ let backStore;
 const getAllTodos = async (obj) => {
   let storeNode = new Store();
   storeNode.create(obj);
-  console.log(storeNode);
   backStore = new Render(storeNode);
-
   backStore.render();
 };
 const waitAllTodos = async () => {
