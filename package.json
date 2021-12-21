@@ -1,0 +1,25 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./server/server.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JustVasiliy/todo-with-vanilla-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JustVasiliy/todo-with-vanilla-js/issues"
+  },
+  "homepage": "https://github.com/JustVasiliy/todo-with-vanilla-js#readme",
+  "dependencies": {
+    "mongoose": "^6.1.2",
+    "nodemon": "^2.0.15"
+  }
+}
